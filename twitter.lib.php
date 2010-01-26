@@ -508,8 +508,7 @@ class Twitter extends TwitterBase {
 		$api_url = sprintf('http%s://twitter.com/%s.%s', ($require_credentials ? 's' : ''), $twitter_method, $format);
 
 		$args = array(
-			'method' => $http_method,
-			'headers' => array('Expect' => ''),
+			'method' => strtoupper($http_method),
 		);
 
 		if (count($options) > 0) {
@@ -521,10 +520,15 @@ class Twitter extends TwitterBase {
 		}
 
 		if ($require_credentials) {
-			$args['headers']['Authorization'] = 'Basic ' . base64_encode($this->credentials);
+			$args['headers'] = array(
+				'Authorization' => 'Basic ' . base64_encode($this->credentials
+			);
 		}
 
 		$result = wp_remote_request($api_url, $args);
+
+		if ($result instanceof WP_Error)
+			return $result;
 
 		$this->http_status = $result['response']['code'];
 		$this->last_api_call = $api_url;
