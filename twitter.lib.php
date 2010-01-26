@@ -504,27 +504,32 @@ class Twitter extends TwitterBase {
 	 * @return string
 	 */
 	protected function apiCall($twitter_method, $http_method, $format, $options, $require_credentials = true) {
-		$curl_handle = curl_init();
+
 		$api_url = sprintf('http%s://twitter.com/%s.%s', ($require_credentials ? 's' : ''), $twitter_method, $format);
-		if (($http_method == 'get') && (count($options) > 0)) {
-			$api_url .= '?' . http_build_query($options);
+
+		$args = array(
+			'method' => $http_method,
+			'headers' => array('Expect' => ''),
+		);
+
+		if (count($options) > 0) {
+			if ('get' == $http_method) {
+				$api_url .= '?' . http_build_query($options);
+			} else if ('post' == $http_method) {
+				$args['body'] = $options;
+			}
 		}
 
-		curl_setopt($curl_handle, CURLOPT_URL, $api_url);
 		if ($require_credentials) {
-			curl_setopt($curl_handle, CURLOPT_USERPWD, $this->credentials);
+			$args['headers']['Authorization'] = 'Basic ' . base64_encode($this->credentials);
 		}
-		if ($http_method == 'post') {
-			curl_setopt($curl_handle, CURLOPT_POST, true);
-			curl_setopt($curl_handle, CURLOPT_POSTFIELDS, http_build_query($options));
-		}
-		curl_setopt($curl_handle, CURLOPT_RETURNTRANSFER, TRUE);
-		curl_setopt($curl_handle, CURLOPT_HTTPHEADER, array('Expect:'));
-		$twitter_data = curl_exec($curl_handle);
-		$this->http_status = curl_getinfo($curl_handle, CURLINFO_HTTP_CODE);
+
+		$result = wp_remote_request($api_url, $args);
+
+		$this->http_status = $result['response']['code'];
 		$this->last_api_call = $api_url;
-		curl_close($curl_handle);
-		return $twitter_data;
+
+		return $result['body'];
 	}
 
 }
