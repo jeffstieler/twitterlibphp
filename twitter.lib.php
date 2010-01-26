@@ -521,7 +521,7 @@ class Twitter extends TwitterBase {
 
 		if ($require_credentials) {
 			$args['headers'] = array(
-				'Authorization' => 'Basic ' . base64_encode($this->credentials
+				'Authorization' => 'Basic ' . base64_encode($this->credentials),
 			);
 		}
 
