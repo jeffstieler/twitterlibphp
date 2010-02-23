@@ -523,6 +523,7 @@ class Twitter extends TwitterBase {
 			$args['headers'] = array(
 				'Authorization' => 'Basic ' . base64_encode($this->credentials),
 			);
+			$args['sslverify'] = false;
 		}
 
 		$result = wp_remote_request($api_url, $args);
