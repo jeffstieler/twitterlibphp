@@ -505,7 +505,7 @@ class Twitter extends TwitterBase {
 	 */
 	protected function apiCall($twitter_method, $http_method, $format, $options, $require_credentials = true) {
 
-		$api_url = sprintf('http%s://twitter.com/%s.%s', ($require_credentials ? 's' : ''), $twitter_method, $format);
+		$api_url = sprintf('http%s://api.twitter.com/1/%s.%s', ($require_credentials ? 's' : ''), $twitter_method, $format);
 
 		$args = array(
 			'method' => strtoupper($http_method),
