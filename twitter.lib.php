@@ -528,8 +528,9 @@ class Twitter extends TwitterBase {
 
 		$result = wp_remote_request($api_url, $args);
 
-		if ($result instanceof WP_Error)
+		if (is_wp_error($result)) {
 			return $result;
+		}
 
 		$this->http_status = $result['response']['code'];
 		$this->last_api_call = $api_url;
